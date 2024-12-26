@@ -1,7 +1,7 @@
 # Amazon S3 File Explorer Demo
 Amazon S3 Browser is a c# example to browse the files in S3, allows you to upload and download the files in S3. The S3 Browser demo provide an intuitive interface to manage the files in S3, you can seamlessly view and manage your files in S3, it provides an C# example how to upload and download the files in S3 with the C# AWS SDK.
 ![Amazon S3 File Explorer Demo](https://www.easefilter.com/images/S3Explorer.png)
-##Congfigure S3 Site Settings
+## Congfigure S3 Site Settings
 You can configure multiple S3 sites in the explorer,You can add, edit or delete a S3 site settings by clicking the associated button. 
 1.  Make sure you have a S3 key pair. You will need both the access key ID and the secret access key in order to continue. You can get them from the S3 console website.
 2.  Put your site name and then enter your access key id and secret access key in the text boxes, choose the region in your setting.
@@ -12,10 +12,10 @@ You can configure multiple S3 sites in the explorer,You can add, edit or delete 
 7.  After filled in all the data, click apply to save the settings.
 ![S3 settings](https://www.easefilter.com/images/S3Setting.png)
 
-## Connect S3 storage as on-premise's second storage 
-The CloudTier SDK integrates S3 Intelligent-Tiering cloud storage with on-premise storage systems seamlessly, creating a hybrid storage environment.  So it allows on-premise applications to access S3 file objects transparently, just as they would access on-premise regular files. There is no interruption to move or restore your on-premise files to/from the cloud storage, so you don’t need to change your existing applications and infrastructure to be compatible with the cloud environment.
+## Connect S3 storage as on-premises second storage 
+The [CloudTier SDK](https://www.easefilter.com/cloud/storage-tiering-sdk.htm) integrates S3 Intelligent-Tiering cloud storage with on-premise storage systems seamlessly, creating a hybrid storage environment.  So it allows on-premise applications to access S3 file objects transparently, just as they would access on-premise regular files. There is no interruption to move or restore your on-premise files to/from the cloud storage, so you don’t need to change your existing applications and infrastructure to be compatible with the cloud environment.
 
-The CloudTier S3 demo is a C# demo project, it demonstrates how to connect the S3 storage from your on-premise storage, and how to generate the test files in on-premise storage and S3 storage. It demonstrates how to browse and read the S3 files as a local regular files.
+The [CloudTier S3 demo](https://www.easefilter.com/cloud/cloudtier-s3-intelligent-tiering-demo.htm) is a C# demo project, it demonstrates how to connect the S3 storage from your on-premise storage, and how to generate the test files in on-premise storage and S3 storage. It demonstrates how to browse and read the S3 files as a local regular files.
 ![CloudTier S3 Demo](https://www.easefilter.com/images/CloudTierS3Demo.PNG)
 
 ## EaseFilter File System Filter Driver SDK Reference
