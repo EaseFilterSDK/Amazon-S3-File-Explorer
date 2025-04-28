@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A5A5B376-323B-446C-A24B-E34953B78501}</ProjectGuid>
+    <ProjectGuid>{89C02385-84A8-44CE-A4B8-60E392CE9B08}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudTier.CommonObjects</RootNamespace>
-    <AssemblyName>CommonObjects</AssemblyName>
+    <RootNamespace>CloudFile.CommonObjects</RootNamespace>
+    <AssemblyName>CloudFile.CommonObjects</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -99,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FilterControl\FilterControl.csproj">
-      <Project>{AACB937F-97A1-4287-AABC-943298F796F0}</Project>
+      <Project>{3bcb54bc-a6bc-4a9f-a316-3a8500de70e7}</Project>
       <Name>FilterControl</Name>
     </ProjectReference>
   </ItemGroup>

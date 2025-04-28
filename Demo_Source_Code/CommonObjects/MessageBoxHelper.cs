@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-namespace CloudTier.CommonObjects
+namespace CloudFile.CommonObjects
 {
     public static class MessageBoxHelper
     {

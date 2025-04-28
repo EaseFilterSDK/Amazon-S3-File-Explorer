@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace CloudTier.CommonObjects
+namespace CloudFile.CommonObjects
 {
 
     public class ConfigSetting

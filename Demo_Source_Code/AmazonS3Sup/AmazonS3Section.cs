@@ -17,7 +17,7 @@
 
 using System.Configuration;
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
     public class AmazonS3Section : ConfigurationSection
     {

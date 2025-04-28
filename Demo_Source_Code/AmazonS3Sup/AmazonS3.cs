@@ -31,7 +31,7 @@ using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 
-using CloudTier.CommonObjects;
+using CloudFile.CommonObjects;
 
 
 
@@ -52,7 +52,7 @@ using CloudTier.CommonObjects;
 //amazonS3Client.copyObject(request);
 
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
     public class AmazonS3
     {
@@ -921,10 +921,14 @@ namespace CloudTier.AmazonS3Sup
         {
             DirectoryList dirFileList = new DirectoryList(directoryName, siteInfo, refresh);
 
+            if(dirFileList.IsDirFileListDownloaded)
+            {
+                return dirFileList;
+            }
+
             try
             {
-
-                EventManager.WriteMessage(101, "DirFileList", EventLevel.Verbose, "Initialize dirFileList for dirName " + directoryName + ",refresh:" + refresh);
+                Console.WriteLine("Initialize dirFileList for dirName " + directoryName + ",refresh:" + refresh);
 
                 dirFileList = await S3Utils.FileListAsync(client, siteInfo, dirFileList);
 

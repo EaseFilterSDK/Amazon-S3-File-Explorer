@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
     public class MimeType
     {

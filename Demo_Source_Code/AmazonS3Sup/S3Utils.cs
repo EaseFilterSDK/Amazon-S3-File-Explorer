@@ -17,8 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Specialized;
-using System.Configuration;
+using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -26,9 +25,9 @@ using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 
-using CloudTier.CommonObjects;
+using CloudFile.CommonObjects;
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
     public class S3Utils
     {
@@ -74,7 +73,7 @@ namespace CloudTier.AmazonS3Sup
 
                     while (listObjects)
                     {
-
+                      
                         ListObjectsResponse response = await client.ListObjectsAsync(request);
                         foreach (string dir in response.CommonPrefixes)
                         {
@@ -103,6 +102,9 @@ namespace CloudTier.AmazonS3Sup
                         {
                             var fileName = entry.Key.Substring(remotePath.Length);
 
+                            //here is the test tag data format, you can create with your own custom format.
+                            //tag data format:"sitename:the site name you created in setting;remote file path"
+                            byte[] tagData = ASCIIEncoding.Unicode.GetBytes("sitename:" + siteInfo.SiteName + ";" + entry.Key);
 
                             if (fileName.Length > 0)
                             {
@@ -110,7 +112,7 @@ namespace CloudTier.AmazonS3Sup
 
                                 DateTime dateStamp = entry.LastModified;
                                 dirFileList.AddFileEntry(fileName,
-                                                        null,
+                                                        tagData,
                                                          dateStamp.ToFileTime(),
                                                           dateStamp.ToFileTime(),
                                                           dateStamp.ToFileTime(),

@@ -23,9 +23,9 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 
-using CloudTier.CommonObjects;
+using CloudFile.CommonObjects;
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
     static public class CloudUtil
     {
@@ -106,31 +106,7 @@ namespace CloudTier.AmazonS3Sup
             }
 
             return true;
-        }
-
-        public static string GetRemotePathByLocalPath(string localPath, AmazonS3SiteInfo siteInfo)
-        {
-            string remotePath = localPath;
-
-            if (remotePath.StartsWith(siteInfo.LocalPath, true, System.Globalization.CultureInfo.CurrentCulture))
-            {
-                remotePath = remotePath.Substring(siteInfo.LocalPath.Length);
-            }
-            else
-            {
-                remotePath = localPath;
-            }
-
-            if (remotePath.StartsWith("\\") || remotePath.StartsWith("/"))
-            {
-                remotePath = remotePath.Substring(1);
-            }
-
-            remotePath = Path.Combine(siteInfo.RemotePath, remotePath);
-            remotePath = remotePath.Replace("\\", "/");
-
-            return remotePath;
-        }
+        }     
 
         public static void GetMappingInfo(AmazonS3SiteInfo siteInfo, string fileName, ref string localCacheFileName, ref string remoteFileName)
         {
@@ -187,14 +163,37 @@ namespace CloudTier.AmazonS3Sup
 
         }
 
-
-        public static string GetCacheFileNameByFolderName(string directoryName)
+        public static string GetRemotePathByLocalPath(string localPath, AmazonS3SiteInfo siteInfo)
         {
-            AmazonS3SiteInfo siteInfo = GetSiteInfoByLocalPath(directoryName);
+            string remotePath = localPath;
+
+            if (remotePath.StartsWith(siteInfo.LocalPath, true, System.Globalization.CultureInfo.CurrentCulture))
+            {
+                remotePath = remotePath.Substring(siteInfo.LocalPath.Length);
+            }
+            else
+            {
+                remotePath = localPath;
+            }
+
+            if (remotePath.StartsWith("\\") || remotePath.StartsWith("/"))
+            {
+                remotePath = remotePath.Substring(1);
+            }
+
+            remotePath = Path.Combine(siteInfo.RemotePath, remotePath);
+            remotePath = remotePath.Replace("\\", "/");
+
+            return remotePath;
+        }
+
+        public static string GetDirFileListCacheName(string localDirectoryName)
+        {
+            AmazonS3SiteInfo siteInfo = GetSiteInfoByLocalPath(localDirectoryName);
 
             if( null == siteInfo )
             {
-                EventManager.WriteMessage(173, "GetCacheFileNameByFolderName", EventLevel.Error, "Can't get site info by folder name :" + directoryName);
+                EventManager.WriteMessage(173, "GetCacheFileNameByFolderName", EventLevel.Error, "Can't get site info by folder name :" + localDirectoryName);
                 return string.Empty;
             }
 
@@ -205,15 +204,15 @@ namespace CloudTier.AmazonS3Sup
 
             if (mappingFolder.Length > 0)
             {
-                if (!directoryName.ToLower().StartsWith(mappingFolder, StringComparison.CurrentCultureIgnoreCase))
+                if (!localDirectoryName.ToLower().StartsWith(mappingFolder, StringComparison.CurrentCultureIgnoreCase))
                 {
-                    EventManager.WriteMessage(185, "GetCacheFileNameByFolderName", EventLevel.Error, "Folder name " + directoryName + " doesn't match the mapping folder " + mappingFolder);
+                    EventManager.WriteMessage(185, "GetCacheFileNameByFolderName", EventLevel.Error, "Folder name " + localDirectoryName + " doesn't match the mapping folder " + mappingFolder);
                     return string.Empty;
                 }
                 else
                 {
 
-                    string folder = directoryName.Substring(mappingFolder.Length);
+                    string folder = localDirectoryName.Substring(mappingFolder.Length);
                     if (folder.StartsWith("\\"))
                     {
                         folder = folder.Substring(1);
@@ -229,9 +228,139 @@ namespace CloudTier.AmazonS3Sup
                 Directory.CreateDirectory(cacheDirName);
             }
 
-            cacheDirName = Path.Combine(cacheDirName, GlobalConfig.VirtualFileListName);
+            cacheDirName = Path.Combine(cacheDirName, GlobalConfig.DirFileListName);
 
             return cacheDirName;
         }
+
+        public static string GetCacheFileName(string localFileName)
+        {
+            AmazonS3SiteInfo siteInfo = GetSiteInfoByLocalPath(localFileName);
+
+            if (null == siteInfo)
+            {
+                EventManager.WriteMessage(240, "GetCacheFileName", EventLevel.Error, "Can't get site info by file name :" + localFileName);
+                return string.Empty;
+            }
+
+            string cacheFolder = GlobalConfig.CacheFolder;
+            string mappingFolder = siteInfo.LocalPath.ToLower();
+
+            string cacheFileName = Path.Combine(cacheFolder, siteInfo.SiteName);
+
+            if (mappingFolder.Length > 0)
+            {
+                if (!localFileName.ToLower().StartsWith(mappingFolder, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    EventManager.WriteMessage(185, "GetCacheFileName", EventLevel.Error, "Folder name " + localFileName + " doesn't match the mapping folder " + mappingFolder);
+                    return string.Empty;
+                }
+                else
+                {
+
+                    string remotPath = localFileName.Substring(mappingFolder.Length);
+                    if (remotPath.StartsWith("\\"))
+                    {
+                        remotPath = remotPath.Substring(1);
+                    }
+
+                    cacheFileName = Path.Combine(cacheFileName, remotPath);
+                }
+            }
+
+
+            if (!Directory.Exists(Path.GetDirectoryName(cacheFileName)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(cacheFileName));
+            }
+
+            return cacheFileName;
+        }
+
+        private static void DeleteExpiredCachedFiles(string folder)
+        {
+            try
+            {
+                string[] subDirs = Directory.GetDirectories(folder);
+
+                foreach (string dir in subDirs)
+                {
+                    DeleteExpiredCachedFiles(dir);
+                }
+
+                string[] files = Directory.GetFiles(folder);
+
+                int expireCachedDirListingSeconds = GlobalConfig.ExpireCachedDirectoryListingAfterSeconds;
+                int deleteCachedFileSeconds = GlobalConfig.DeleteCachedFilesAfterSeconds;
+                string dirListingName = GlobalConfig.DirFileListName;
+
+                bool deleteFolderNeeded = true;
+
+                foreach (string file in files)
+                {
+                    try
+                    {
+                        FileInfo fileInfo = new FileInfo(file);
+                        TimeSpan timeSpan = DateTime.Now - fileInfo.LastWriteTime;
+
+                        if (string.Compare(dirListingName, Path.GetFileName(file)) == 0)
+                        {
+                            //this is the directory listing file
+                            if (timeSpan.TotalSeconds > expireCachedDirListingSeconds)
+                            {
+                                File.Delete(file);
+                            }
+                            else
+                            {
+                                deleteFolderNeeded = false;
+                            }
+                        }
+                        else
+                        {
+                            if (timeSpan.TotalSeconds > deleteCachedFileSeconds)
+                            {
+                                File.Delete(file);
+                            }
+                            else
+                            {
+                                deleteFolderNeeded = false;
+                            }
+                        }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        EventManager.WriteMessage(243, "DeleteExpiredCachedFiles", EventLevel.Verbose, "Delete file " + file + " in folder " + folder + " failed with error " + ex.Message);
+                    }
+                }
+
+                if (deleteFolderNeeded && subDirs.Length == 0)
+                {
+                    Directory.Delete(folder);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                EventManager.WriteMessage(255, "DeleteExpiredCachedFiles", EventLevel.Verbose, "DeleteExpiredCachedFiles in folder " + folder + " failed with error " + ex.Message);
+            }
+        }
+
+        public static void DeleteExpiredCachedFiles(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            try
+            {
+                string cacheFolder = GlobalConfig.CacheFolder;
+                DeleteExpiredCachedFiles(cacheFolder);
+
+            }
+            catch (Exception ex)
+            {
+                EventManager.WriteMessage(136, "ClearCacheFiles", EventLevel.Error, "Clear cache file failed with error " + ex.Message);
+            }
+        }
+
+
     }
 }

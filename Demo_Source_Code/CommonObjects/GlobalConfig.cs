@@ -14,7 +14,7 @@ using System.IO;
 using System.Threading;
 using System.Reflection;
 
-namespace CloudTier.CommonObjects
+namespace CloudFile.CommonObjects
 {
 
 
@@ -66,9 +66,9 @@ namespace CloudTier.CommonObjects
         static string cacheFolder = AssemblyPath + "\\CacheFolder";
 
         /// <summary>
-        /// the file name of the virtual folder's file list meta data's file.
+        /// the cache directory file list name of the cloud folder.
         /// </summary>
-        static string virtualFileListName = "virtualFileList.data";
+        public static string dirFileListName = "dirFileList.dat";
 
         /// <summary>
         /// The cache directory file list life time
@@ -99,7 +99,7 @@ namespace CloudTier.CommonObjects
             try
             {
                 eventLevel = (EventLevel)ConfigSetting.Get("eventLevel", (int)eventLevel);
-                virtualFileListName = ConfigSetting.Get("virtualFileListName", virtualFileListName);
+                dirFileListName = ConfigSetting.Get("dirFileListName", dirFileListName);
                 cacheFolder = ConfigSetting.Get("cacheFolder", cacheFolder);
                 filterConnectionThreads = ConfigSetting.Get("filterConnectionThreads", filterConnectionThreads);
                 connectionTimeOut = ConfigSetting.Get("connectionTimeOut", connectionTimeOut);
@@ -122,7 +122,7 @@ namespace CloudTier.CommonObjects
         {
             isRunning = false;
             stopEvent.Set();
-           
+
         }      
 
         public static string LicenseKey
@@ -382,15 +382,15 @@ namespace CloudTier.CommonObjects
         }
 
         /// <summary>
-        /// The file name of the virtual folder file list, includes all files' name, size, attribute, tag data and sub directories name.
+        /// The file name of the cloud folder file list, includes all files' name, size, attribute, tag data and sub directories name.
         /// </summary>
-        public static string VirtualFileListName
+        public static string DirFileListName
         {
-            get { return virtualFileListName; }
+            get { return dirFileListName; }
             set
             {
-                virtualFileListName = value;
-                ConfigSetting.Set("virtualFileListName", value.ToString());
+                dirFileListName = value;
+                ConfigSetting.Set("dirFileListName", value.ToString());
             }
         }
 

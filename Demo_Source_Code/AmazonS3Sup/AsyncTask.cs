@@ -21,10 +21,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.IO;
 
-using CloudTier.FilterControl;
-using CloudTier.CommonObjects;
+using CloudFile.FilterControl;
+using CloudFile.CommonObjects;
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
 
     public enum TaskType

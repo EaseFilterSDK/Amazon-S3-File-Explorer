@@ -21,9 +21,9 @@ using System.IO;
 using System.Threading;
 using System.Reflection;
 
-using CloudTier.FilterControl;
+using CloudFile.FilterControl;
 
-namespace CloudTier.CommonObjects
+namespace CloudFile.CommonObjects
 {
 
 

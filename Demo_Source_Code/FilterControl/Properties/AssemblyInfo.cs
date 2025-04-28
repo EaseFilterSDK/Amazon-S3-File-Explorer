@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CloudTier FilterControl")]
+[assembly: AssemblyTitle("CloudFile FilterControl")]
 [assembly: AssemblyDescription("Filter Driver Control")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("CloudTier")]
+[assembly: AssemblyCompany("CloudFile")]
 [assembly: AssemblyProduct("FilterControl")]
-[assembly: AssemblyCopyright("Copyright © CloudTier")]
-[assembly: AssemblyTrademark("CloudTier")]
+[assembly: AssemblyCopyright("Copyright © CloudFile")]
+[assembly: AssemblyTrademark("CloudFile")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -32,6 +32,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.3.1.1001")]
+[assembly: AssemblyVersion("3.1.1.1001")]
 //[assembly: AssemblyFileVersion("3.2.1.2008")]
 

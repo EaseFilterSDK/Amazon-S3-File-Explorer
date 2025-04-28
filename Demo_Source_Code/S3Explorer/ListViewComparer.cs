@@ -3,8 +3,8 @@ using System.Collections;
 using System.Text;
 using System.Windows.Forms;
 
-using CloudTier.CommonObjects;
-using CloudTier.AmazonS3Sup;
+using CloudFile.CommonObjects;
+using CloudFile.AmazonS3Sup;
 
 namespace AmazonS3Explorer
 {

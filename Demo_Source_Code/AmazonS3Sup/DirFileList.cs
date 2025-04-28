@@ -19,10 +19,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
-using CloudTier.CommonObjects;
+using CloudFile.CommonObjects;
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
 
     public struct FileEntry
@@ -48,6 +49,9 @@ namespace CloudTier.AmazonS3Sup
         private Dictionary<string, FileEntry> dirFileList = null;
         private string directoryName = string.Empty;
         private string remoteDirName = string.Empty;
+        private string dirFileListCacheFileName = string.Empty;
+        private FileStream dirFileListCacheFileStream = null;
+        private bool isDirFileListDownloaded = false;
         private long currentFileId = 0;
 
 
@@ -65,12 +69,33 @@ namespace CloudTier.AmazonS3Sup
 
         public DirectoryList(string dirName, AmazonS3SiteInfo siteInfo, bool downloadNeeded)
         {
-            directoryName = dirName;
-            forceDownload = downloadNeeded;
-
-            remoteDirName = GetRemotePathByLocalPath(dirName, siteInfo);
-
             this.dirFileList = new Dictionary<string, FileEntry>();
+
+            this.directoryName = dirName;
+            this.forceDownload = downloadNeeded;
+
+            remoteDirName = CloudUtil.GetRemotePathByLocalPath(dirName, siteInfo);
+            dirFileListCacheFileName = CloudUtil.GetDirFileListCacheName(directoryName);
+
+            if (File.Exists(dirFileListCacheFileName))
+            {
+                if (downloadNeeded)
+                {
+                    //force to download the file list, delete the cache file list here.
+                    try
+                    {
+                        File.Delete(dirFileListCacheFileName);
+                    }
+                    catch { }
+                }
+                else
+                {
+                    //load the file list from the cache file.
+                    isDirFileListDownloaded = true;
+
+                    return;
+                }
+            }
 
         }
 
@@ -80,10 +105,15 @@ namespace CloudTier.AmazonS3Sup
             {
                 dirFileList.Clear();
             }
+
+            if (null != dirFileListCacheFileStream)
+            {
+                dirFileListCacheFileStream.Close();
+            }
         }
 
         public void Dispose()
-        {
+        {           
             Dispose(true);
         }
 
@@ -131,17 +161,72 @@ namespace CloudTier.AmazonS3Sup
             fileEntry.TagData = tagData;
             dirFileList.Add(fileName.ToLower(),fileEntry);
 
+            WriteFileEntry(fileEntry);
+
             return;
         }
 
+        private void WriteFileEntry(FileEntry fileEntry)
+        {
+            if(null == dirFileListCacheFileStream)
+            {
+                dirFileListCacheFileStream = new FileStream(dirFileListCacheFileName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            }
+
+            BinaryWriter bw = new BinaryWriter(dirFileListCacheFileStream);
+
+            bw.Write(fileEntry.EntryLength);
+            bw.Write(fileEntry.Flags);
+            bw.Write(fileEntry.FileAttributes);
+            bw.Write(fileEntry.FileId);
+            bw.Write(fileEntry.FileSize);
+            bw.Write(fileEntry.CreationTime);
+            bw.Write(fileEntry.LastAccessTime);
+            bw.Write(fileEntry.LastWriteTime);
+            bw.Write(fileEntry.TagDataLength);
+            bw.Write(fileEntry.FileNameLength);
+            if (fileEntry.FileNameLength > 0)
+            {
+                byte[] fileNameArray = UnicodeEncoding.Unicode.GetBytes(fileEntry.FileName);
+                bw.Write(fileNameArray);
+            }
+            if (fileEntry.TagDataLength > 0)
+            {
+                bw.Write(fileEntry.TagData);
+            }
+
+        }
+
+        /// <summary>
+        /// the local directory path
+        /// </summary>
         public string DirectoryName
         {
             get { return directoryName; }
         }
 
+        /// <summary>
+        /// the remote cloud directory path
+        /// </summary>
         public string RemoteDirName
         {
             get { return remoteDirName; }
+        }
+
+        /// <summary>
+        /// the cache file name of the cloud folder directory file list 
+        /// </summary>
+        public string DirFileListCacheFileName
+        {
+            get { return dirFileListCacheFileName; }
+        }
+
+        /// <summary>
+        /// the cloud folder directory file list cache file exists in the cache folder. 
+        /// </summary>
+        public bool IsDirFileListDownloaded
+        {
+            get { return isDirFileListDownloaded; }
         }
 
         /// <summary>
@@ -189,31 +274,7 @@ namespace CloudTier.AmazonS3Sup
         private int CompareFile(FileEntry x, FileEntry y)
         {
             return string.Compare(x.FileName, y.FileName, true);
-        }
-
-        public string GetRemotePathByLocalPath(string localPath, AmazonS3SiteInfo siteInfo)
-        {
-            string remotePath = localPath;
-
-            if (remotePath.StartsWith(siteInfo.LocalPath, true, System.Globalization.CultureInfo.CurrentCulture))
-            {
-                remotePath = remotePath.Substring(siteInfo.LocalPath.Length);
-            }
-            else
-            {
-                remotePath = localPath;
-            }
-
-            if (remotePath.StartsWith("\\") || remotePath.StartsWith("/"))
-            {
-                remotePath = remotePath.Substring(1);
-            }
-
-            remotePath = Path.Combine(siteInfo.RemotePath, remotePath);
-            remotePath = remotePath.Replace("\\", "/");
-
-            return remotePath;
-        }
+        }     
 
 
     }

@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CloudTier CommonObjects")]
+[assembly: AssemblyTitle("CloudFile CommonObjects")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("CloudTier")]
+[assembly: AssemblyCompany("CloudFile")]
 [assembly: AssemblyProduct("CommonObjects")]
-[assembly: AssemblyCopyright("Copyright ©CloudTier")]
-[assembly: AssemblyTrademark("CloudTier")]
+[assembly: AssemblyCopyright("Copyright ©CloudFile")]
+[assembly: AssemblyTrademark("CloudFile")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

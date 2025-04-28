@@ -4,7 +4,7 @@
     <ProjectType>Local</ProjectType>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{78426F4A-D35A-44E8-97C1-2DA1B13B5F08}</ProjectGuid>
+    <ProjectGuid>{79D43BBA-6110-4332-BD78-608D4A089EFC}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ApplicationIcon>folder_view.ico</ApplicationIcon>
@@ -209,15 +209,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AmazonS3Sup\AmazonS3Sup.csproj">
-      <Project>{703c279f-8fac-4a4d-acdc-9eb3e47089b7}</Project>
+      <Project>{a5ff34ee-e1b0-4ee1-b2e1-cab31f9a9682}</Project>
       <Name>AmazonS3Sup</Name>
     </ProjectReference>
     <ProjectReference Include="..\CommonObjects\CommonObjects.csproj">
-      <Project>{a5a5b376-323b-446c-a24b-e34953b78501}</Project>
+      <Project>{89c02385-84a8-44ce-a4b8-60e392ce9b08}</Project>
       <Name>CommonObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\FilterControl\FilterControl.csproj">
-      <Project>{aacb937f-97a1-4287-aabc-943298f796f0}</Project>
+      <Project>{3bcb54bc-a6bc-4a9f-a316-3a8500de70e7}</Project>
       <Name>FilterControl</Name>
     </ProjectReference>
   </ItemGroup>

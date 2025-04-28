@@ -12,7 +12,7 @@ using System.Globalization;
 ///
 ///
 
-namespace CloudTier.CommonObjects
+namespace CloudFile.CommonObjects
 {
     public enum EventLevel
     {

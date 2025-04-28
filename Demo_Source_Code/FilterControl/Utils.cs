@@ -20,7 +20,7 @@ using System.Reflection;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace CloudTier.FilterControl
+namespace CloudFile.FilterControl
 {
     public class Utils
     {
@@ -222,11 +222,11 @@ namespace CloudTier.FilterControl
             {
                 System.Reflection.Assembly assembly = System.Reflection.Assembly.GetEntryAssembly();
                 string localPath = Path.GetDirectoryName(assembly.Location);
-                string driverName = Path.Combine(localPath, "CloudTier.sys");
+                string driverName = Path.Combine(localPath, "CloudFile.sys");
 
                 if (File.Exists(driverName))
                 {
-                    string driverInstalledPath = Path.Combine(Environment.SystemDirectory, "drivers\\cloudtier.sys");
+                    string driverInstalledPath = Path.Combine(Environment.SystemDirectory, "drivers\\CloudFile.sys");
 
                     if (File.Exists(driverInstalledPath))
                     {
@@ -296,8 +296,8 @@ namespace CloudTier.FilterControl
                 }
 
 
-                sourceFile = Path.Combine(sourceFolder, "CloudTier.sys");
-                targetName = Path.Combine(localPath, "CloudTier.sys");
+                sourceFile = Path.Combine(sourceFolder, "CloudFile.sys");
+                targetName = Path.Combine(localPath, "CloudFile.sys");
 
 
                 skipCopy = false;
@@ -320,7 +320,7 @@ namespace CloudTier.FilterControl
             }
             catch (Exception ex)
             {
-                lastError = "Copy platform dependent files 'FilterAPI.DLL' and 'CloudTier.sys' to folder " + localPath + " got exception:" + ex.Message;
+                lastError = "Copy platform dependent files 'FilterAPI.DLL' and 'CloudFile.sys' to folder " + localPath + " got exception:" + ex.Message;
             }
         }
 

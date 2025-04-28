@@ -1,4 +1,4 @@
-﻿namespace CloudTier.CommonObjects
+﻿namespace CloudFile.CommonObjects
 {
     partial class OptionForm
     {

@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace CloudTier.FilterControl
+namespace CloudFile.FilterControl
 {
 
     /// <summary>
@@ -59,9 +59,16 @@ namespace CloudTier.FilterControl
             LastWriteTime = messageSend.LastWriteTime;
             ProcessId = messageSend.ProcessId;
             ThreadId = messageSend.ThreadId;
+            
             FileName = messageSend.FileName;
+            if (FileName.StartsWith("\\??\\"))
+            {
+                FileName = FileName.Substring(4);
+            }
+
             FileSize = messageSend.FileSize;
             Attributes =(FileAttributes)messageSend.FileAttributes;
+            InfoClass = messageSend.InfoClass;
 
             ReadOffset = messageSend.Offset;
             ReadLength = messageSend.Length;
@@ -76,7 +83,7 @@ namespace CloudTier.FilterControl
         /// </summary>
         public uint MessageId { get; set; }
         /// <summary>
-        /// The Message Id.
+        /// The Message Type of the request.
         /// </summary>
         public FilterAPI.MessageType MessageType { get; set; }
         /// <summary>
@@ -123,6 +130,10 @@ namespace CloudTier.FilterControl
         /// The file attributes of the file IO.
         /// </summary>
         public FileAttributes Attributes { get; set; }
+        /// <summary>
+        /// The file infomation class.
+        /// </summary>
+        public uint InfoClass { get; set; }
         /// <summary>
         /// The read offset
         /// </summary>
@@ -229,6 +240,22 @@ namespace CloudTier.FilterControl
 
         List<uint> includeProcessIdList = new List<uint>();
         List<uint> excludeProcessIdList = new List<uint>();
+        List<string> cloudFolderList = new List<string>();
+
+        /// <summary>
+        /// The cache directory file list life time
+        /// </summary>
+        static private int expireCachedDirectoryListingAfterSeconds = 60;
+
+        /// <summary>
+        /// the maximum dir info cache size in kernel memory.
+        /// </summary>
+        static private int maxDirCacheSizeInKernel = 100 * 1024 * 1024; //100MB
+
+        /// <summary>
+        /// register the file events, trigger the notifcation when the events were happened after the file was closed 
+        /// </summary>
+        FilterAPI.FileChangedEvents registerFileEvents = 0;
 
         public static string licenseKey = string.Empty;
 
@@ -259,6 +286,23 @@ namespace CloudTier.FilterControl
         }
 
         /// <summary>
+        /// The maximum cache directory list size in memory.
+        /// </summary>
+        public int MaxDirCacheSizeInKernel
+        {
+            get { return maxDirCacheSizeInKernel; }
+            set { maxDirCacheSizeInKernel = value; }
+        }
+        /// <summary>
+        /// The living time of the cache directory listing.
+        /// </summary>
+        public int ExpireCachedDirectoryListingAfterSeconds
+        {
+            get { return expireCachedDirectoryListingAfterSeconds; }
+            set { expireCachedDirectoryListingAfterSeconds = value; }
+        }
+
+        /// <summary>
         /// if this flag is true, the filter driver will reopen the file when the stub file was rehydrated to bypass the write event for the file monitor driver.
         /// </summary>
         public bool ByPassWriteEventOnReHydration
@@ -277,7 +321,24 @@ namespace CloudTier.FilterControl
             }
         }
 
+        /// <summary>
+        /// The managed cloud folders.
+        /// </summary>
+        public List<string> CloudFolderList
+        {
+            get { return cloudFolderList; }
+            set { cloudFolderList = value; }
+        }
 
+        /// <summary>
+        ///  Register the file events, trigger the notifcation when the events were happened after the file handle was closed. 
+        ///  it is only enabled for monitor filter driver
+        /// </summary>
+        public FilterAPI.FileChangedEvents FileChangeEventFilter
+        {
+            get { return registerFileEvents; }
+            set { registerFileEvents = value; }
+        }
 
         /// <summary>
         /// Fires this event when the filter send the request.
@@ -473,6 +534,38 @@ namespace CloudTier.FilterControl
                         return false;
                     }
                 }
+
+                foreach (string cloudFolder in CloudFolderList)
+                {
+                    if (!FilterAPI.AddNewFilterRule(FilterAPI.ALLOW_MAX_RIGHT_ACCESS, cloudFolder, false))
+                    {
+                        lastError = "Add cloudFolder " + cloudFolder + " failed:" + FilterAPI.GetLastErrorMessage();
+                        return false;
+                    }
+
+                    if (FileChangeEventFilter > 0 && !FilterAPI.RegisterFileChangedEventsToFilterRule(cloudFolder, (uint)FileChangeEventFilter))
+                    {
+                        lastError = "Register file event type:" + FileChangeEventFilter + " failed:" + FilterAPI.GetLastErrorMessage();
+                        return false;
+                    }
+
+                }
+
+                //set the time to live for the directory cache in the filter driver.
+                if(!FilterAPI.SetIntegerData((uint)FilterAPI.DataControlId.DIR_CACHE_TIMEOUT, (long)expireCachedDirectoryListingAfterSeconds))
+                {
+                    lastError = "Set DIR_CACHE_TIMEOUT :" + expireCachedDirectoryListingAfterSeconds + " failed:" + FilterAPI.GetLastErrorMessage();
+                    return false;
+                }
+
+
+                //set the maximum directory cache size in filter driver.
+                if(!FilterAPI.SetIntegerData((uint)FilterAPI.DataControlId.MAX_TOTAL_DIR_CACHE_SIZE, (long)maxDirCacheSizeInKernel))
+                {
+                    lastError = "Set MAX_TOTAL_DIR_CACHE_SIZE :" + maxDirCacheSizeInKernel + " failed:" + FilterAPI.GetLastErrorMessage();
+                    return false;
+                }
+
             }
             catch (Exception ex)
             {

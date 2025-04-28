@@ -7,9 +7,9 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using CloudTier.CommonObjects;
-using CloudTier.AmazonS3Sup;
-using CloudTier.FilterControl;
+using CloudFile.CommonObjects;
+using CloudFile.AmazonS3Sup;
+using CloudFile.FilterControl;
 
 namespace AmazonS3Explorer
 {   

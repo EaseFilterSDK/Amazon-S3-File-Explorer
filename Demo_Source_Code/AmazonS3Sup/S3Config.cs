@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Collections.Generic;
 
 
-namespace CloudTier.AmazonS3Sup
+namespace CloudFile.AmazonS3Sup
 {
     public class S3Config
     {

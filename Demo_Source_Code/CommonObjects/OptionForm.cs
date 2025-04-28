@@ -19,9 +19,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
-using CloudTier.FilterControl;
+using CloudFile.FilterControl;
 
-namespace CloudTier.CommonObjects
+namespace CloudFile.CommonObjects
 {
     public partial class OptionForm : Form
     {
